@@ -1,42 +1,23 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, Button, Input } from 'react-native-elements';
-import Spacer from '../components/Spacer';
+import { NavigationEvents } from 'react-navigation';
 import { Context as AuthContext } from '../context/AuthContext';
+import AuthForm from '../components/AuthForm';
+import AuthNavLink from '../components/AuthNavLink';
 
-const SignUpScreen = ({ navigation }) => {
-  const { state, signup } = useContext(AuthContext);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const SignUpScreen = () => {
+  const { state, signup, clearErrMessage } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
-      <Spacer>
-        <Text h1>Sign Up for TrackIt</Text>
-      </Spacer>
-      <Spacer>
-        <Input
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-      </Spacer>
-      <Spacer>
-        <Input
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          autoCapitalize="none"
-          autoCorrect={false}
-          secureTextEntry
-        />
-      </Spacer>
-      {state.errorMessage ? <Text style={styles.errorMessage}>{state.errorMessage}</Text> : null}
-      <Spacer>
-        <Button title="Sign Up" onPress={() => signup({ email, password })} />
-      </Spacer>
+      <NavigationEvents onWillFocus={clearErrMessage} />
+      <AuthForm
+        headerText="Sign Up for TrackIt"
+        errorMessage={state.errorMessage}
+        buttonText="Sign Up"
+        onSubmit={signup}
+      />
+      <AuthNavLink text={`Already have an account?\nSign In instead!`} routeName="SignIn" />
     </View>
   );
 };
@@ -50,11 +31,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     marginBottom: 250
-  },
-  errorMessage: {
-    color: 'red',
-    fontSize: 18,
-    marginLeft: 15
   }
 });
 
