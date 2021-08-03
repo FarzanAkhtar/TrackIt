@@ -1,14 +1,40 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useContext, useCallback } from 'react';
+import { StyleSheet } from 'react-native';
+import { Text } from 'react-native-elements';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { withNavigationFocus } from 'react-navigation';
+import { Context as LocationContext } from '../context/LocationContext';
+import Map from '../components/Map';
+import Spacer from '../components/Spacer';
+import useLocation from '../hooks/useLocation';
+import TrackForm from '../components/TrackForm';
+import { Feather } from '@expo/vector-icons';
 
-const TrackCreateScreen = () => {
+const TrackCreateScreen = ({ isFocused }) => {
+  const { state: { recording }, addLocation } = useContext(LocationContext);
+  const callback = useCallback(location => {
+    addLocation(location, recording);
+  }, [recording]);
+
+  const [err] = useLocation(isFocused || recording, callback);
+
   return (
-    <View>
-      <Text>Track Create Screen</Text>
-    </View>
+    <SafeAreaView>
+      <Text h2>Create a Track</Text>
+      <Spacer>
+        <Map />
+      </Spacer>
+      {err && <Text>{err.message}</Text>}
+      <TrackForm />
+    </SafeAreaView>
   );
+};
+
+TrackCreateScreen.navigationOptions = {
+  title: 'Add Track',
+  tabBarIcon: <Feather name="plus" size={20} color="black" />
 };
 
 const styles = StyleSheet.create({});
 
-export default TrackCreateScreen;
+export default withNavigationFocus(TrackCreateScreen);

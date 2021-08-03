@@ -9,8 +9,21 @@ import TrackCreateScreen from './src/screens/TrackCreateScreen';
 import TrackDetailScreen from './src/screens/TrackDetailScreen';
 import TrackListScreen from './src/screens/TrackListScreen';
 import { Provider as AuthProvider } from './src/context/AuthContext';
+import { Provider as LocationProvider } from './src/context/LocationContext';
+import { Provider as TracksProvider } from './src/context/TracksContext';
 import { setNavigator } from './src/navigationRef';
 import LandingScreen from './src/screens/LandingScreen';
+import { Feather } from '@expo/vector-icons';
+
+const trackFlow = createStackNavigator({
+  TrackList: TrackListScreen,
+  TrackDetail: TrackDetailScreen
+});
+
+trackFlow.navigationOptions = {
+  title: 'My Tracks',
+  tabBarIcon: <Feather name="list" size={20} color="black" />
+};
 
 const switchNavigator = createSwitchNavigator({
   Landing: LandingScreen,
@@ -19,10 +32,7 @@ const switchNavigator = createSwitchNavigator({
     SignUp: SignUpScreen
   }),
   mainFlow: createBottomTabNavigator({
-    trackFlow: createStackNavigator({
-      TrackList: TrackListScreen,
-      TrackDetail: TrackDetailScreen
-    }),
+    trackFlow,
     TrackCreate: TrackCreateScreen,
     Account: AccountScreen
   })
@@ -32,8 +42,12 @@ const App = createAppContainer(switchNavigator);
 
 export default () => {
   return (
-    <AuthProvider>
-      <App ref={navigator => setNavigator(navigator)} />
-    </AuthProvider>
+    <TracksProvider>
+      <LocationProvider>
+        <AuthProvider>
+          <App ref={navigator => setNavigator(navigator)} />
+        </AuthProvider>
+      </LocationProvider>
+    </TracksProvider>
   );
 };
